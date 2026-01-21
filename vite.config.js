@@ -15,22 +15,67 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    host: true, // Allow external connections
-    strictPort: false, // Try next available port if 5173 is taken
-    open: false, // Don't auto-open browser (cross-platform safe)
+    host: true,
+    strictPort: false,
+    open: false,
   },
   build: {
     outDir: 'dist',
-    sourcemap: false, // Disable sourcemaps in production for security
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'framer-motion': ['framer-motion'],
-        },
+    sourcemap: false,
+    // Optimize chunk size
+    chunkSizeWarningLimit: 500,
+    // Minification settings
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
       },
     },
+    rollupOptions: {
+      output: {
+        // Manual chunks for better caching
+        manualChunks: {
+          // React core
+          'react-vendor': ['react', 'react-dom'],
+          // React Router
+          'router': ['react-router-dom'],
+          // Framer Motion (largest dependency)
+          'framer-motion': ['framer-motion'],
+        },
+        // Optimize asset file names for caching
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split('.')
+          const ext = info[info.length - 1]
+          if (/\.(png|jpe?g|gif|svg|webp|avif)$/i.test(assetInfo.name)) {
+            return `assets/images/[name]-[hash][extname]`
+          }
+          if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name)) {
+            return `assets/fonts/[name]-[hash][extname]`
+          }
+          return `assets/[name]-[hash][extname]`
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+      },
+    },
+    // CSS code splitting
+    cssCodeSplit: true,
+    // Target modern browsers for smaller bundle
+    target: 'es2020',
   },
   // Optimize image handling
-  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.JPG', '**/*.png', '**/*.gif', '**/*.svg'],
+  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.JPG', '**/*.png', '**/*.gif', '**/*.svg', '**/*.webp', '**/*.avif'],
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+    // Force optimization of these
+    esbuildOptions: {
+      target: 'es2020',
+    },
+  },
+  // Enable CSS optimization
+  css: {
+    devSourcemap: false,
+  },
 })

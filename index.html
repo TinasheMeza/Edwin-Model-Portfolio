@@ -4,13 +4,67 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Edwin Ndifon - International Fashion Model. Editorial, runway, and commercial modeling portfolio showcasing collaborations with top luxury brands worldwide." />
+    <meta name="keywords" content="Edwin Ndifon, fashion model, male model, editorial model, runway model, commercial model, fashion portfolio" />
+    <meta name="author" content="Edwin Ndifon" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Edwin Ndifon - Fashion Model Portfolio" />
+    <meta property="og:description" content="International fashion model portfolio featuring editorial, runway, and commercial work with luxury brands." />
+    <meta property="og:image" content="/og-image.jpg" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Edwin Ndifon - Fashion Model Portfolio" />
+    <meta name="twitter:description" content="International fashion model portfolio featuring editorial, runway, and commercial work." />
+    
+    <!-- Performance: Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Performance: DNS prefetch for external links -->
+    <link rel="dns-prefetch" href="https://www.instagram.com" />
+    
+    <!-- Google Fonts - Space Grotesk with font-display: swap for faster text rendering -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Performance: Theme color for browser UI -->
+    <meta name="theme-color" content="#0d0906" />
+    
+    <!-- Performance: Enable hardware acceleration hint -->
+    <meta name="renderer" content="webkit" />
+    
     <title>Edwin Ndifon - Fashion Model Portfolio</title>
+    
+    <!-- Critical CSS - Inline for fastest first paint -->
+    <style>
+      /* Critical above-the-fold styles */
+      *,*::before,*::after{box-sizing:border-box}
+      body{margin:0;background:#0d0906;color:#f5ebe0;font-family:'Space Grotesk',sans-serif}
+      #root{min-height:100vh}
+      /* Loading state background */
+      .initial-loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0d0906;z-index:100}
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Initial loader shown before React hydrates -->
+    <div id="root">
+      <div class="initial-loader">
+        <div style="text-align:center">
+          <div style="width:48px;height:48px;border:2px solid rgba(212,165,116,0.3);border-top-color:#d4a574;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px"></div>
+          <div style="font-size:20px;font-weight:500;background:linear-gradient(to right,#f5ebe0,#e8b87a,#f5ebe0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Edwin Ndifon</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Inline keyframe for initial loader -->
+    <style>
+      @keyframes spin{to{transform:rotate(360deg)}}
+    </style>
+    
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

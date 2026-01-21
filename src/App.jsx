@@ -1,176 +1,91 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, memo, lazy, Suspense } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import ErrorBoundary from './components/ErrorBoundary'
 import Navigation from './components/Navigation'
-import Hero from './components/Hero'
-import Portfolio from './components/Portfolio'
-import Campaigns from './components/Campaigns'
-import About from './components/About'
-import Contact from './components/Contact'
 import Footer from './components/Footer'
-import ImageModal from './components/ImageModal'
+import { rafThrottle, isMobileDevice, prefersReducedMotion } from './utils/performance'
 
-// Import portfolio images for lightbox navigation
-import img1 from './Images/WT7A3108.jpeg'
-import img2 from './Images/IMG_9621.JPG'
-import img3 from './Images/WT7A2922(2).jpeg'
-import img4 from './Images/IMG_9622.JPG'
-import img5 from './Images/IMG_7123(1).JPG'
-import img6 from './Images/WT7A2912(2).jpeg'
-import img7 from './Images/IMG_9637.JPG'
-import img8 from './Images/IMG_7141.JPG'
-import img9 from './Images/IMG_9610.JPG'
-import img10 from './Images/IMG_7144.JPG'
-import img11 from './Images/IMG_7121(2).JPG'
-import img12 from './Images/IMG_7130.JPG'
-import img13 from './Images/IMG_7146.JPG'
-import img14 from './Images/WT7A2922(1).jpeg'
-import img15 from './Images/IMG_7120.JPG'
-import img16 from './Images/WT7A3063(4).jpeg'
-import img17 from './Images/WT7A8875.jpeg'
-import img18 from './Images/IMG_7151.JPG'
+// Lazy load pages for code splitting
+const Home = lazy(() => import('./pages/Home'))
+const Gallery = lazy(() => import('./pages/Gallery'))
+const CampaignsPage = lazy(() => import('./pages/CampaignsPage'))
+const ContactPage = lazy(() => import('./pages/ContactPage'))
 
-// All portfolio images for lightbox navigation
-const allPortfolioImages = [
-  { id: 1, src: img1, title: 'Fashion Week NYC', category: 'Runway' },
-  { id: 2, src: img2, title: 'Urban Style', category: 'Editorial' },
-  { id: 3, src: img3, title: 'Studio Portrait', category: 'Portrait' },
-  { id: 4, src: img4, title: 'Brand Campaign', category: 'Commercial' },
-  { id: 5, src: img5, title: 'Street Fashion', category: 'Editorial' },
-  { id: 6, src: img6, title: 'Monochrome', category: 'Portrait' },
-  { id: 7, src: img7, title: 'Designer Showcase', category: 'Runway' },
-  { id: 8, src: img8, title: 'Classic Portrait', category: 'Portrait' },
-  { id: 9, src: img9, title: 'Lifestyle Brand', category: 'Commercial' },
-  { id: 10, src: img10, title: 'Editorial Spread', category: 'Editorial' },
-  { id: 11, src: img11, title: 'Casual Elegance', category: 'Commercial' },
-  { id: 12, src: img12, title: 'Dramatic Portrait', category: 'Portrait' },
-  { id: 13, src: img13, title: 'Print Campaign', category: 'Commercial' },
-  { id: 14, src: img14, title: 'High Fashion', category: 'Runway' },
-  { id: 15, src: img15, title: 'Magazine Feature', category: 'Editorial' },
-  { id: 16, src: img16, title: 'Artistic Vision', category: 'Portrait' },
-  { id: 17, src: img17, title: 'Runway Walk', category: 'Runway' },
-  { id: 18, src: img18, title: 'Editorial Look', category: 'Editorial' },
-]
+// Simple loading fallback
+const PageLoader = memo(() => (
+  <div className="min-h-screen bg-charcoal flex items-center justify-center">
+    <div className="w-8 h-8 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
+  </div>
+))
+
+PageLoader.displayName = 'PageLoader'
 
 function App() {
-  const [selectedImage, setSelectedImage] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const location = useLocation()
 
-  // Simulate initial loading for smooth entrance
+  // Reduced loading time - only 800ms for smooth entrance
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 1500)
+    }, 800)
     return () => clearTimeout(timer)
   }, [])
 
-  // Handle image navigation in lightbox
-  const handleImageNavigate = (newImage) => {
-    setSelectedImage(newImage)
-  }
+  // Scroll to top on route change - instant, no animation needed
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
 
   return (
     <ErrorBoundary>
-      {/* Loading Screen */}
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            className="fixed inset-0 z-[100] bg-black flex items-center justify-center"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
-          >
-            <motion.div
-              className="text-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5 }}
-            >
-              {/* Logo Animation */}
-              <motion.div
-                className="relative mb-8"
-                animate={{ 
-                  rotate: [0, 360],
-                }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity,
-                  ease: 'linear'
-                }}
-              >
-                <div className="w-16 h-16 border-2 border-violet-500/30 rounded-xl" />
-                <motion.div 
-                  className="absolute inset-2 border-2 border-violet-500 rounded-lg"
-                  animate={{ 
-                    rotate: [0, -360],
-                  }}
-                  transition={{ 
-                    duration: 1.5, 
-                    repeat: Infinity,
-                    ease: 'linear'
-                  }}
-                />
-              </motion.div>
-              
-              {/* Name */}
-              <motion.h1
-                className="text-3xl font-display font-bold text-gradient"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                Edwin Ndifon
-              </motion.h1>
-              
-              {/* Loading Bar */}
-              <motion.div 
-                className="mt-6 w-48 h-0.5 bg-white/10 rounded-full overflow-hidden mx-auto"
-              >
-                <motion.div
-                  className="h-full bg-gradient-to-r from-violet-500 to-violet-400 rounded-full"
-                  initial={{ width: '0%' }}
-                  animate={{ width: '100%' }}
-                  transition={{ duration: 1.2, ease: 'easeInOut' }}
-                />
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        )}
+      {/* Loading Screen - Simplified */}
+      <AnimatePresence mode="wait">
+        {isLoading && <LoadingScreen />}
       </AnimatePresence>
 
       {/* Main Content */}
-      <motion.div 
-        className="min-h-screen bg-black"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isLoading ? 0 : 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+      <div 
+        className="min-h-screen bg-charcoal"
+        style={{
+          opacity: isLoading ? 0 : 1,
+          transition: 'opacity 0.3s ease-out',
+        }}
       >
         {/* Fixed Navigation */}
         <ErrorBoundary>
           <Navigation />
         </ErrorBoundary>
 
-        {/* Main Sections */}
+        {/* Main Sections with Route Transitions */}
         <main>
-          <ErrorBoundary>
-            <Hero />
-          </ErrorBoundary>
-
-          <ErrorBoundary>
-            <Portfolio onImageClick={setSelectedImage} />
-          </ErrorBoundary>
-
-          <ErrorBoundary>
-            <Campaigns />
-          </ErrorBoundary>
-
-          <ErrorBoundary>
-            <About />
-          </ErrorBoundary>
-
-          <ErrorBoundary>
-            <Contact />
-          </ErrorBoundary>
+          <Suspense fallback={<PageLoader />}>
+            <AnimatePresence mode="wait">
+              <Routes location={location} key={location.pathname}>
+                <Route path="/" element={
+                  <ErrorBoundary>
+                    <Home />
+                  </ErrorBoundary>
+                } />
+                <Route path="/gallery" element={
+                  <ErrorBoundary>
+                    <Gallery />
+                  </ErrorBoundary>
+                } />
+                <Route path="/campaigns" element={
+                  <ErrorBoundary>
+                    <CampaignsPage />
+                  </ErrorBoundary>
+                } />
+                <Route path="/contact" element={
+                  <ErrorBoundary>
+                    <ContactPage />
+                  </ErrorBoundary>
+                } />
+              </Routes>
+            </AnimatePresence>
+          </Suspense>
         </main>
 
         {/* Footer */}
@@ -178,70 +93,108 @@ function App() {
           <Footer />
         </ErrorBoundary>
 
-        {/* Lightbox Modal */}
-        <AnimatePresence>
-          {selectedImage && (
-            <ErrorBoundary>
-              <ImageModal 
-                image={selectedImage} 
-                onClose={() => setSelectedImage(null)}
-                allImages={allPortfolioImages}
-                onNavigate={handleImageNavigate}
-              />
-            </ErrorBoundary>
-          )}
-        </AnimatePresence>
-
-        {/* Cursor Glow Effect (Desktop Only) */}
+        {/* Cursor Glow Effect (Desktop Only) - Optimized */}
         <CursorGlow />
-      </motion.div>
+      </div>
     </ErrorBoundary>
   )
 }
 
-// Custom cursor glow effect for desktop
-function CursorGlow() {
+// Simplified loading screen with minimal animations
+const LoadingScreen = memo(() => (
+  <motion.div
+    className="fixed inset-0 z-[100] bg-charcoal flex items-center justify-center"
+    initial={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.4, ease: 'easeOut' }}
+  >
+    <div className="text-center">
+      {/* Simple loading indicator */}
+      <div className="relative mb-6">
+        <div className="w-12 h-12 border-2 border-amber-500/30 rounded-lg" />
+        <div 
+          className="absolute inset-1 border-2 border-amber-500 rounded-md animate-spin"
+          style={{ animationDuration: '1.5s' }}
+        />
+      </div>
+      
+      {/* Name */}
+      <h1 className="text-2xl font-medium text-gradient tracking-tight">
+        Edwin Ndifon
+      </h1>
+      
+      {/* Loading Bar */}
+      <div className="mt-4 w-32 h-0.5 bg-brown-900/50 rounded-full overflow-hidden mx-auto">
+        <div
+          className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full"
+          style={{
+            animation: 'loadingBar 0.7s ease-out forwards',
+          }}
+        />
+      </div>
+    </div>
+    
+    <style>{`
+      @keyframes loadingBar {
+        from { width: 0%; }
+        to { width: 100%; }
+      }
+    `}</style>
+  </motion.div>
+))
+
+LoadingScreen.displayName = 'LoadingScreen'
+
+// Optimized cursor glow with RAF throttling
+const CursorGlow = memo(() => {
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [isVisible, setIsVisible] = useState(false)
 
-  useEffect(() => {
-    // Only show on desktop
-    if (typeof window === 'undefined' || window.innerWidth < 1024) return
-
-    const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback(
+    rafThrottle((e) => {
       setPosition({ x: e.clientX, y: e.clientY })
-      setIsVisible(true)
-    }
+      if (!isVisible) setIsVisible(true)
+    }),
+    [isVisible]
+  )
 
-    const handleMouseLeave = () => {
-      setIsVisible(false)
-    }
+  const handleMouseLeave = useCallback(() => {
+    setIsVisible(false)
+  }, [])
 
-    window.addEventListener('mousemove', handleMouseMove)
+  useEffect(() => {
+    // Skip on mobile, touch devices, or reduced motion preference
+    if (typeof window === 'undefined') return
+    if (isMobileDevice() || prefersReducedMotion()) return
+    if (window.innerWidth < 1024) return
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
     document.body.addEventListener('mouseleave', handleMouseLeave)
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
       document.body.removeEventListener('mouseleave', handleMouseLeave)
+      // Cancel any pending RAF
+      handleMouseMove.cancel?.()
     }
-  }, [])
+  }, [handleMouseMove, handleMouseLeave])
 
+  // Don't render on mobile or if not visible
   if (!isVisible) return null
 
   return (
-    <motion.div
+    <div
       className="fixed w-[300px] h-[300px] rounded-full pointer-events-none z-[5] hidden lg:block"
       style={{
-        background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
-        left: position.x - 150,
-        top: position.y - 150,
+        background: 'radial-gradient(circle, rgba(212, 165, 116, 0.08) 0%, transparent 70%)',
+        transform: `translate3d(${position.x - 150}px, ${position.y - 150}px, 0)`,
+        opacity: 1,
+        willChange: 'transform',
       }}
-      animate={{
-        opacity: isVisible ? 1 : 0,
-      }}
-      transition={{ duration: 0.2 }}
     />
   )
-}
+})
+
+CursorGlow.displayName = 'CursorGlow'
 
 export default App

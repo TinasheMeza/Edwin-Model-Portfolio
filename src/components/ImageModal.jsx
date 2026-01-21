@@ -79,7 +79,7 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
       >
         {/* Backdrop */}
         <motion.div
-          className="absolute inset-0 bg-black/95 backdrop-blur-xl"
+          className="absolute inset-0 bg-charcoal/95 backdrop-blur-xl"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -91,7 +91,7 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
 
         {/* Close Button */}
         <motion.button
-          className="absolute top-6 right-6 z-20 w-12 h-12 glass-strong rounded-full flex items-center justify-center hover:bg-violet-500/20 transition-all duration-300 group"
+          className="absolute top-6 right-6 z-20 w-12 h-12 glass-strong rounded-full flex items-center justify-center hover:bg-amber-500/20 transition-all duration-300 group"
           onClick={onClose}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -101,7 +101,7 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
           whileTap={{ scale: 0.9 }}
           aria-label="Close modal"
         >
-          <svg className="w-6 h-6 text-white group-hover:text-violet-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-cream group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </motion.button>
@@ -111,7 +111,7 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
           <>
             {/* Previous */}
             <motion.button
-              className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 glass-strong rounded-full flex items-center justify-center hover:bg-violet-500/20 transition-all duration-300 group"
+              className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 glass-strong rounded-full flex items-center justify-center hover:bg-amber-500/20 transition-all duration-300 group"
               onClick={() => navigateImage('prev')}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -120,14 +120,14 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
               whileTap={{ scale: 0.9 }}
               aria-label="Previous image"
             >
-              <svg className="w-6 h-6 text-white group-hover:text-violet-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-cream group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </motion.button>
 
             {/* Next */}
             <motion.button
-              className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 glass-strong rounded-full flex items-center justify-center hover:bg-violet-500/20 transition-all duration-300 group"
+              className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 glass-strong rounded-full flex items-center justify-center hover:bg-amber-500/20 transition-all duration-300 group"
               onClick={() => navigateImage('next')}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -136,7 +136,7 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
               whileTap={{ scale: 0.9 }}
               aria-label="Next image"
             >
-              <svg className="w-6 h-6 text-white group-hover:text-violet-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-cream group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </motion.button>
@@ -170,12 +170,12 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
               />
             ) : (
               <div className="w-full h-96 flex items-center justify-center glass-card">
-                <p className="text-warm-grey">Image not available</p>
+                <p className="text-warm-grey font-light">Image not available</p>
               </div>
             )}
 
             {/* Decorative Border */}
-            <div className="absolute inset-0 border border-white/10 rounded-2xl pointer-events-none" />
+            <div className="absolute inset-0 border border-amber-400/10 rounded-2xl pointer-events-none" />
           </motion.div>
         </motion.div>
 
@@ -190,19 +190,19 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
           >
             {/* Category Badge */}
             {currentImage.category && (
-              <span className="px-3 py-1 text-xs uppercase tracking-wider text-violet-300 bg-violet-500/20 rounded-full">
+              <span className="px-3 py-1 text-xs uppercase tracking-wider text-amber-300 bg-amber-500/20 rounded-full font-light">
                 {currentImage.category}
               </span>
             )}
             
             {/* Title */}
-            <h3 className="text-lg font-display font-medium text-white">
+            <h3 className="text-lg font-medium text-cream">
               {currentImage.title}
             </h3>
 
             {/* Image Counter */}
             {allImages.length > 1 && (
-              <span className="text-sm text-warm-grey">
+              <span className="text-sm text-warm-grey font-light">
                 {currentIndex + 1} / {allImages.length}
               </span>
             )}
@@ -230,7 +230,7 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
                   }}
                   className={`w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all duration-300 ${
                     actualIndex === currentIndex 
-                      ? 'border-violet-500 scale-110' 
+                      ? 'border-amber-500 scale-110' 
                       : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
                   whileHover={{ scale: 1.05 }}
@@ -249,19 +249,19 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
 
         {/* Keyboard Hint */}
         <motion.div
-          className="absolute bottom-4 right-4 text-xs text-warm-grey/50 hidden md:flex items-center gap-4"
+          className="absolute bottom-4 right-4 text-xs text-warm-grey/50 hidden md:flex items-center gap-4 font-light"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
           <span className="flex items-center gap-1">
-            <kbd className="px-2 py-1 bg-white/10 rounded text-[10px]">ESC</kbd>
+            <kbd className="px-2 py-1 bg-brown-900/50 rounded text-[10px]">ESC</kbd>
             Close
           </span>
           {allImages.length > 1 && (
             <span className="flex items-center gap-1">
-              <kbd className="px-2 py-1 bg-white/10 rounded text-[10px]">←</kbd>
-              <kbd className="px-2 py-1 bg-white/10 rounded text-[10px]">→</kbd>
+              <kbd className="px-2 py-1 bg-brown-900/50 rounded text-[10px]">←</kbd>
+              <kbd className="px-2 py-1 bg-brown-900/50 rounded text-[10px]">→</kbd>
               Navigate
             </span>
           )}

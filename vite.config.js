@@ -24,13 +24,11 @@ export default defineConfig({
     sourcemap: false,
     // Optimize chunk size
     chunkSizeWarningLimit: 500,
-    // Minification settings
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
+    // Use esbuild for minification (built-in, faster than terser)
+    minify: 'esbuild',
+    // esbuild minification options
+    esbuild: {
+      drop: ['console', 'debugger'],
     },
     rollupOptions: {
       output: {

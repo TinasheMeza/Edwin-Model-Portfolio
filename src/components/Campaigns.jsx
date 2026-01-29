@@ -1,5 +1,6 @@
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { useState, memo, useCallback, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import ImageWithFallback from './ImageWithFallback'
 import { useLazyLoad, useInView } from '../hooks/useIntersectionObserver'
 import { getExperienceString } from '../config/modelConfig'
@@ -78,9 +79,14 @@ const campaigns = [
 ]
 
 const Campaigns = memo(() => {
+  const navigate = useNavigate()
   const [hoveredId, setHoveredId] = useState(null)
   const [headerRef, headerInView] = useInView({ threshold: 0.2 })
   const shouldReduceMotion = useReducedMotion()
+
+  const handleCampaignClick = useCallback((brand) => {
+    navigate(`/gallery?brand=${encodeURIComponent(brand)}`)
+  }, [navigate])
 
   return (
     <section 
@@ -131,6 +137,7 @@ const Campaigns = memo(() => {
               isHovered={hoveredId === campaign.id}
               setHoveredId={setHoveredId}
               shouldReduceMotion={shouldReduceMotion}
+              onCampaignClick={handleCampaignClick}
             />
           ))}
         </div>
@@ -166,15 +173,20 @@ const StatCard = memo(({ stat, index }) => {
 StatCard.displayName = 'StatCard'
 
 // Memoized Campaign Card
-const CampaignCard = memo(({ campaign, index, isHovered, setHoveredId, shouldReduceMotion }) => {
+const CampaignCard = memo(({ campaign, index, isHovered, setHoveredId, shouldReduceMotion, onCampaignClick }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [ref, isVisible] = useLazyLoad({ rootMargin: '100px' })
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const videoRef = useRef(null)
 
-  const handleToggle = useCallback(() => {
+  const handleToggle = useCallback((e) => {
+    e.stopPropagation()
     setIsExpanded(prev => !prev)
   }, [])
+
+  const handleCardClick = useCallback(() => {
+    onCampaignClick(campaign.brand)
+  }, [campaign.brand, onCampaignClick])
 
   // Handle video play on hover
   useEffect(() => {
@@ -196,8 +208,8 @@ const CampaignCard = memo(({ campaign, index, isHovered, setHoveredId, shouldRed
     <div
       ref={ref}
       className={`
-        glass-card overflow-hidden group
-        transition-all duration-500
+        glass-card overflow-hidden group cursor-pointer
+        transition-all duration-500 hover:scale-[1.02]
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
       `}
       style={{ 
@@ -206,6 +218,7 @@ const CampaignCard = memo(({ campaign, index, isHovered, setHoveredId, shouldRed
       }}
       onMouseEnter={() => setHoveredId(campaign.id)}
       onMouseLeave={() => setHoveredId(null)}
+      onClick={handleCardClick}
     >
       {/* Cover Image/Video */}
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -290,7 +303,7 @@ const CampaignCard = memo(({ campaign, index, isHovered, setHoveredId, shouldRed
           className="w-full py-3 px-4 glass rounded-lg font-normal text-sm hover:bg-amber-500/10 transition-all duration-300 flex items-center justify-center gap-2 group/btn"
         >
           <span className="text-cream/80 group-hover/btn:text-amber-400 transition-colors">
-            {isExpanded ? 'Show Less' : 'View Details'}
+            {isExpanded ? 'Show Less' : 'View Gallery'}
           </span>
           <svg
             className={`w-4 h-4 text-amber-400 transition-transform duration-300 ${

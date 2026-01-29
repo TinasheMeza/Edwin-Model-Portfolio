@@ -1,5 +1,6 @@
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { useState, useRef, useEffect, useCallback, memo, useMemo } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import ImageWithFallback from '../components/ImageWithFallback'
 import { useLazyLoad } from '../hooks/useIntersectionObserver'
 import { rafThrottle, isMobileDevice } from '../utils/performance'
@@ -90,19 +91,36 @@ const portfolioItems = [
 const categories = ['All', 'Editorial', 'Runway', 'Commercial', 'Portrait', 'Brand Work']
 
 const Gallery = () => {
-  const [activeCategory, setActiveCategory] = useState('All')
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const brandFilter = searchParams.get('brand')
+  const [activeCategory, setActiveCategory] = useState(brandFilter ? 'Brand Work' : 'All')
   const [selectedImage, setSelectedImage] = useState(null)
   const [touchStart, setTouchStart] = useState(null)
   const [touchEnd, setTouchEnd] = useState(null)
   const shouldReduceMotion = useReducedMotion()
 
-  // Memoize filtered items
-  const filteredItems = useMemo(() => 
-    activeCategory === 'All' 
-      ? portfolioItems 
-      : portfolioItems.filter(item => item.category === activeCategory),
-    [activeCategory]
-  )
+  // Update category when brand filter is present
+  useEffect(() => {
+    if (brandFilter) {
+      setActiveCategory('Brand Work')
+    }
+  }, [brandFilter])
+
+  // Memoize filtered items - filter by brand if brandFilter exists, otherwise by category
+  const filteredItems = useMemo(() => {
+    let items = portfolioItems
+    
+    // If brand filter is present, filter by brand
+    if (brandFilter) {
+      items = items.filter(item => item.brand === brandFilter)
+    } else if (activeCategory !== 'All') {
+      // Otherwise filter by category
+      items = items.filter(item => item.category === activeCategory)
+    }
+    
+    return items
+  }, [activeCategory, brandFilter])
 
   // Current image index
   const currentIndex = useMemo(() => 
@@ -188,33 +206,37 @@ const Gallery = () => {
           {/* Header */}
           <div className="text-center mb-12 md:mb-16">
             <span className="text-amber-400 text-sm uppercase tracking-[0.3em] mb-4 block font-light">
-              Portfolio Collection
+              {brandFilter ? `${brandFilter} Campaign` : 'Portfolio Collection'}
             </span>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium text-gradient mb-6 tracking-tight">
-              Gallery
+              {brandFilter ? brandFilter : 'Gallery'}
             </h1>
             <p className="text-warm-grey max-w-2xl mx-auto font-light">
-              A curated selection of editorial, runway, commercial, and portrait work 
-              showcasing versatility and professional excellence.
+              {brandFilter 
+                ? `A curated selection of work from ${brandFilter} campaigns, showcasing brand collaborations and professional excellence.`
+                : 'A curated selection of editorial, runway, commercial, and portrait work showcasing versatility and professional excellence.'
+              }
             </p>
           </div>
 
-          {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`category-pill transition-all duration-200 ${
-                  activeCategory === category 
-                    ? 'category-pill-active' 
-                    : 'category-pill-inactive'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+          {/* Category Filter - Hide when brand filter is active */}
+          {!brandFilter && (
+            <div className="flex flex-wrap justify-center gap-3 mb-12">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setActiveCategory(category)}
+                  className={`category-pill transition-all duration-200 ${
+                    activeCategory === category 
+                      ? 'category-pill-active' 
+                      : 'category-pill-inactive'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Portfolio Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
@@ -231,11 +253,28 @@ const Gallery = () => {
             </AnimatePresence>
           </div>
 
+          {/* Back to Gallery button when brand filter is active */}
+          {brandFilter && (
+            <div className="text-center mt-8">
+              <button
+                onClick={() => navigate('/gallery')}
+                className="inline-flex items-center gap-2 px-6 py-3 glass-card rounded-lg font-normal text-sm hover:bg-amber-500/10 transition-all duration-300 group"
+              >
+                <svg className="w-4 h-4 text-amber-400 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="text-cream group-hover:text-amber-400 transition-colors">Back to All Gallery</span>
+              </button>
+            </div>
+          )}
+
           {/* Results count */}
-          <p className="text-center mt-8 text-warm-grey font-light">
-            Showing {filteredItems.length} {filteredItems.length === 1 ? 'image' : 'images'}
-            {activeCategory !== 'All' && ` in ${activeCategory}`}
-          </p>
+          {!brandFilter && (
+            <p className="text-center mt-8 text-warm-grey font-light">
+              Showing {filteredItems.length} {filteredItems.length === 1 ? 'image' : 'images'}
+              {activeCategory !== 'All' && ` in ${activeCategory}`}
+            </p>
+          )}
         </div>
       </section>
 

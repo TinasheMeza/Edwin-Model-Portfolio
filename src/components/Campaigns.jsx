@@ -1,78 +1,79 @@
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { useState, memo, useCallback } from 'react'
+import { useState, memo, useCallback, useEffect, useRef } from 'react'
 import ImageWithFallback from './ImageWithFallback'
 import { useLazyLoad, useInView } from '../hooks/useIntersectionObserver'
 import { getExperienceString } from '../config/modelConfig'
 
-// Import campaign images - using available images for campaigns
-import capitecImg from '../Images/WT7A3108.jpeg'
-import qeftysImg from '../Images/IMG_9621.JPG'
-import adidasCtfcImg from '../Images/WT7A2922(2).jpeg'
-import adidasFacultyImg from '../Images/IMG_9622.JPG'
+// Import campaign poster-card images
+import adidasPoster from '../Images/Adidas/poster-card.jpg'
+import capeTownCityPoster from '../Images/Cape Town City/poster-card.jpeg'
+import capitecPoster from '../Images/Capitec/poster-card.PNG'
+import capitecVideo from '../Images/Capitec/49af2068-f53b-4498-9ed7-b51d5762c4cf.mov'
+import saskoPoster from '../Images/Sasko/poster-card.PNG'
 
 // Campaign statistics - based on actual work
 const campaignStats = [
-  { value: '3', label: 'Major Brands' },
+  { value: '4', label: 'Major Brands' },
   { value: '4', label: 'Campaigns' },
   { value: getExperienceString(), label: 'Experience' },
   { value: 'Cape Town', label: 'Based In' },
 ]
 
-// Actual campaign data - South African brands only
+// Brand campaign data - only the 4 brands Edwin has worked with
 const campaigns = [
   {
     id: 1,
-    brand: 'Capitec',
-    title: 'Banking Campaign',
-    year: '2023',
+    brand: 'Adidas',
+    title: 'Brand Campaign',
+    year: '2024',
     role: 'Featured Model',
-    coverImage: capitecImg,
-    description: 'Featured in Capitec\'s marketing campaign, representing the modern, aspirational South African consumer. This commercial campaign showcased the bank\'s commitment to accessibility and contemporary lifestyle.',
-    achievements: ['National print campaign', 'Digital advertising', 'Brand representation'],
+    coverImage: adidasPoster,
+    description: 'Collaborated with Adidas on brand campaigns, representing the intersection of sport and style. This work showcases athletic wear and street fashion in the local community.',
+    achievements: ['Brand representation', 'Sports lifestyle campaign', 'Commercial work'],
     color: 'from-amber-500/20 to-amber-600/10',
+    location: 'Cape Town, South Africa',
+    type: 'Sports / Commercial',
+  },
+  {
+    id: 2,
+    brand: 'Cape Town City',
+    title: 'Brand Campaign',
+    year: '2024',
+    role: 'Campaign Model',
+    coverImage: capeTownCityPoster,
+    description: 'Featured in Cape Town City brand campaigns, showcasing the vibrant local culture and community spirit of the Mother City.',
+    achievements: ['Brand campaign', 'Local representation', 'Community engagement'],
+    color: 'from-brown-500/20 to-brown-600/10',
     location: 'Cape Town, South Africa',
     type: 'Commercial',
   },
   {
-    id: 2,
-    brand: 'Qeftys',
-    title: 'Brand Campaign',
-    year: '2023',
-    role: 'Campaign Model',
-    coverImage: qeftysImg,
-    description: 'Collaborated with Qeftys for their brand campaign, showcasing contemporary streetwear and lifestyle aesthetics that resonate with the modern South African youth culture.',
-    achievements: ['Lookbook feature', 'Social media content', 'Brand ambassador'],
-    color: 'from-brown-500/20 to-brown-600/10',
-    location: 'Cape Town, South Africa',
-    type: 'Fashion',
-  },
-  {
     id: 3,
-    brand: 'Adidas',
-    title: 'Cape Town FC Collaboration',
-    year: '2024',
+    brand: 'Capitec',
+    title: 'Video Campaign',
+    year: '2023',
     role: 'Featured Model',
-    coverImage: adidasCtfcImg,
-    description: 'Part of Adidas\'s collaboration with Cape Town FC, representing the intersection of sport and style in the local football community. This campaign highlighted the connection between athletic wear and street fashion.',
-    achievements: ['Team kit launch', 'Sports lifestyle campaign', 'Local football community'],
+    coverImage: capitecPoster,
+    videoSrc: capitecVideo,
+    description: 'Featured in Capitec\'s video campaign, representing the modern, aspirational South African consumer. This commercial campaign showcased the bank\'s commitment to accessibility and contemporary lifestyle.',
+    achievements: ['Video campaign', 'Digital advertising', 'Brand representation'],
     color: 'from-warm-grey/20 to-brown-700/10',
     location: 'Cape Town, South Africa',
-    type: 'Sports / Commercial',
-    collaboration: 'Cape Town FC',
+    type: 'Commercial',
+    hasVideo: true,
   },
   {
     id: 4,
-    brand: 'Adidas',
-    title: 'Faculty FC Campaign',
+    brand: 'Sasko',
+    title: 'Brand Campaign',
     year: '2024',
-    role: 'Team Member / Model',
-    coverImage: adidasFacultyImg,
-    description: 'Featured in Adidas content as part of Faculty FC, a football collective I am actively involved with. This campaign blends sport culture with fashion, showcasing authentic participation in the local football scene.',
-    achievements: ['Authentic representation', 'Community football culture', 'Adidas partnership'],
+    role: 'Campaign Model',
+    coverImage: saskoPoster,
+    description: 'Collaborated with Sasko on brand campaigns, representing quality and authenticity in South African consumer products.',
+    achievements: ['Brand campaign', 'Commercial work', 'Product representation'],
     color: 'from-gold/20 to-amber-700/10',
     location: 'Cape Town, South Africa',
-    type: 'Sports / Commercial',
-    collaboration: 'Faculty FC',
+    type: 'Commercial',
   },
 ]
 
@@ -84,7 +85,7 @@ const Campaigns = memo(() => {
   return (
     <section 
       id="campaigns"
-      className="section-padding relative overflow-hidden bg-brown-950"
+      className="pt-12 md:pt-16 pb-24 md:pb-32 px-4 md:px-8 lg:px-16 relative overflow-hidden bg-brown-950"
     >
       {/* Background Effects - Static */}
       <div className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-transparent to-charcoal/50" />
@@ -168,10 +169,28 @@ StatCard.displayName = 'StatCard'
 const CampaignCard = memo(({ campaign, index, isHovered, setHoveredId, shouldReduceMotion }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [ref, isVisible] = useLazyLoad({ rootMargin: '100px' })
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const videoRef = useRef(null)
 
   const handleToggle = useCallback(() => {
     setIsExpanded(prev => !prev)
   }, [])
+
+  // Handle video play on hover
+  useEffect(() => {
+    if (campaign.hasVideo && videoRef.current) {
+      if (isHovered && !isVideoPlaying) {
+        videoRef.current.play().catch(() => {
+          // Autoplay may fail, that's okay
+        })
+        setIsVideoPlaying(true)
+      } else if (!isHovered && isVideoPlaying) {
+        videoRef.current.pause()
+        videoRef.current.currentTime = 0
+        setIsVideoPlaying(false)
+      }
+    }
+  }, [isHovered, campaign.hasVideo, isVideoPlaying])
 
   return (
     <div
@@ -188,7 +207,7 @@ const CampaignCard = memo(({ campaign, index, isHovered, setHoveredId, shouldRed
       onMouseEnter={() => setHoveredId(campaign.id)}
       onMouseLeave={() => setHoveredId(null)}
     >
-      {/* Cover Image */}
+      {/* Cover Image/Video */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <div
           className={`w-full h-full transition-transform duration-500 ${
@@ -196,24 +215,49 @@ const CampaignCard = memo(({ campaign, index, isHovered, setHoveredId, shouldRed
           }`}
         >
           {isVisible && (
-            <ImageWithFallback
-              src={campaign.coverImage}
-              alt={campaign.title}
-              className="w-full h-full object-cover"
-            />
+            campaign.hasVideo ? (
+              <>
+                {/* Poster image - shown when not hovering */}
+                <ImageWithFallback
+                  src={campaign.coverImage}
+                  alt={campaign.title}
+                  className={`w-full h-full object-cover transition-opacity duration-300 ${
+                    isVideoPlaying ? 'opacity-0' : 'opacity-100'
+                  }`}
+                />
+                {/* Video - plays on hover */}
+                <video
+                  ref={videoRef}
+                  src={campaign.videoSrc}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                    isVideoPlaying ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  onError={(e) => {
+                    if (import.meta.env.DEV) {
+                      console.error('Video loading error:', e)
+                    }
+                  }}
+                />
+              </>
+            ) : (
+              <ImageWithFallback
+                src={campaign.coverImage}
+                alt={campaign.title}
+                className={`w-full h-full ${
+                  campaign.brand === 'Sasko' ? 'object-contain' : 'object-cover'
+                }`}
+              />
+            )
           )}
         </div>
         
         {/* Overlay Gradients */}
         <div className={`absolute inset-0 bg-gradient-to-t ${campaign.color}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/40 to-transparent" />
-        
-        {/* Year Badge */}
-        <div className="absolute top-4 left-4">
-          <span className="px-3 py-1 text-xs font-normal bg-amber-500/30 backdrop-blur-sm rounded-full text-amber-200 border border-amber-500/30">
-            {campaign.year}
-          </span>
-        </div>
 
         {/* Role Badge */}
         <div className="absolute top-4 right-4">

@@ -30,6 +30,22 @@ import img22 from '../Images/IMG_7125.JPG'
 import img23 from '../Images/IMG_7126.JPG'
 import img24 from '../Images/IMG_7127.JPG'
 
+// Import brand work images - Adidas
+import adidas1 from '../Images/Adidas/1039a249-a873-4292-bad3-beeb22fa2e12.jpg'
+import adidas2 from '../Images/Adidas/eb922cc6-4715-45c0-97b5-f809079eba65.jpg'
+import adidas3 from '../Images/Adidas/IMG_2860.PNG'
+import adidas4 from '../Images/Adidas/MSD02859.jpeg'
+
+// Import brand work images - Cape Town City
+import ctCity1 from '../Images/Cape Town City/3W4A8073 (1).jpeg'
+import ctCity2 from '../Images/Cape Town City/3W4A8073.jpeg'
+import ctCity3 from '../Images/Cape Town City/3W4A8075.jpeg'
+import ctCity4 from '../Images/Cape Town City/3W4A8083.jpeg'
+import ctCity5 from '../Images/Cape Town City/3W4A8085.jpeg'
+
+// Import brand work - Capitec video
+import capitecVideo from '../Images/Capitec/49af2068-f53b-4498-9ed7-b51d5762c4cf.mov'
+
 // Portfolio data - memoized to prevent recreating on each render
 const portfolioItems = [
   { id: 1, src: img1, title: 'Fashion Week NYC', category: 'Runway' },
@@ -56,9 +72,22 @@ const portfolioItems = [
   { id: 22, src: img22, title: 'Studio Session', category: 'Portrait' },
   { id: 23, src: img23, title: 'Couture Collection', category: 'Runway' },
   { id: 24, src: img24, title: 'Brand Story', category: 'Commercial' },
+  // Brand Work - Adidas
+  { id: 25, src: adidas1, title: 'Adidas Campaign', category: 'Brand Work', brand: 'Adidas', description: 'Brand work for Adidas showcasing athletic wear and street fashion.' },
+  { id: 26, src: adidas2, title: 'Adidas Campaign', category: 'Brand Work', brand: 'Adidas', description: 'Brand work for Adidas showcasing athletic wear and street fashion.' },
+  { id: 27, src: adidas3, title: 'Adidas Campaign', category: 'Brand Work', brand: 'Adidas', description: 'Brand work for Adidas showcasing athletic wear and street fashion.' },
+  { id: 28, src: adidas4, title: 'Adidas Campaign', category: 'Brand Work', brand: 'Adidas', description: 'Brand work for Adidas showcasing athletic wear and street fashion.' },
+  // Brand Work - Cape Town City
+  { id: 29, src: ctCity1, title: 'Cape Town City Campaign', category: 'Brand Work', brand: 'Cape Town City', description: 'Brand work for Cape Town City showcasing the vibrant local culture and community spirit.' },
+  { id: 30, src: ctCity2, title: 'Cape Town City Campaign', category: 'Brand Work', brand: 'Cape Town City', description: 'Brand work for Cape Town City showcasing the vibrant local culture and community spirit.' },
+  { id: 31, src: ctCity3, title: 'Cape Town City Campaign', category: 'Brand Work', brand: 'Cape Town City', description: 'Brand work for Cape Town City showcasing the vibrant local culture and community spirit.' },
+  { id: 32, src: ctCity4, title: 'Cape Town City Campaign', category: 'Brand Work', brand: 'Cape Town City', description: 'Brand work for Cape Town City showcasing the vibrant local culture and community spirit.' },
+  { id: 33, src: ctCity5, title: 'Cape Town City Campaign', category: 'Brand Work', brand: 'Cape Town City', description: 'Brand work for Cape Town City showcasing the vibrant local culture and community spirit.' },
+  // Brand Work - Capitec (Video)
+  { id: 34, src: capitecVideo, title: 'Capitec Video Campaign', category: 'Brand Work', brand: 'Capitec', description: 'Featured in Capitec\'s video campaign, representing the modern, aspirational South African consumer.', isVideo: true },
 ]
 
-const categories = ['All', 'Editorial', 'Runway', 'Commercial', 'Portrait']
+const categories = ['All', 'Editorial', 'Runway', 'Commercial', 'Portrait', 'Brand Work']
 
 const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState('All')
@@ -141,13 +170,13 @@ const Gallery = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-charcoal pt-24"
+      className="min-h-screen bg-charcoal pt-12"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <section className="section-padding relative overflow-hidden">
+      <section className="pt-12 md:pt-16 pb-24 md:pb-32 px-4 md:px-8 lg:px-16 relative overflow-hidden">
         {/* Background - Static for performance */}
         <div className="grid-overlay opacity-20" />
         
@@ -248,14 +277,40 @@ const GalleryItem = memo(({ item, index, onImageClick, shouldReduceMotion }) => 
       onClick={onImageClick}
       style={{ contain: 'layout paint' }}
     >
-      {/* Image Container */}
+      {/* Image/Video Container */}
       <div className="relative aspect-[3/4] overflow-hidden">
         {isVisible && (
-          <ImageWithFallback
-            src={item.src}
-            alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          item.isVideo ? (
+            <>
+              <video
+                src={item.src}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                onError={(e) => {
+                  if (import.meta.env.DEV) {
+                    console.error('Video loading error:', e)
+                  }
+                }}
+              />
+              {/* Video Play Icon */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-16 h-16 rounded-full glass-amber flex items-center justify-center opacity-80">
+                  <svg className="w-8 h-8 text-amber-300 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
+            </>
+          ) : (
+            <ImageWithFallback
+              src={item.src}
+              alt={item.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          )
         )}
         
         {/* Hover Overlay */}
@@ -376,7 +431,7 @@ const Lightbox = memo(({
       </>
     )}
 
-    {/* Image Container */}
+    {/* Image/Video Container */}
     <motion.div
       className="relative z-10 max-w-6xl max-h-[85vh] w-full mx-4"
       initial={{ scale: 0.95, opacity: 0 }}
@@ -384,33 +439,31 @@ const Lightbox = memo(({
       exit={{ scale: 0.95, opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-        <ImageWithFallback
-          src={image.src}
-          alt={image.title}
-          className="w-full h-full object-contain max-h-[80vh]"
-          priority
-        />
-        <div className="absolute inset-0 border border-amber-400/10 rounded-2xl pointer-events-none" />
-      </div>
-    </motion.div>
-
-    {/* Image Info */}
-    <motion.div
-      className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 glass-card px-6 py-4 flex items-center gap-6"
-      initial={{ y: 20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.1 }}
-    >
-      <span className="px-3 py-1 text-xs uppercase tracking-wider text-amber-300 bg-amber-500/20 rounded-full font-light">
-        {image.category}
-      </span>
-      <h3 className="text-lg font-medium text-cream">
-        {image.title}
-      </h3>
-      <span className="text-sm text-warm-grey font-light">
-        {currentIndex + 1} / {filteredItems.length}
-      </span>
+        <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+          {image.isVideo ? (
+            <video
+              src={image.src}
+              className="w-full h-full object-contain max-h-[80vh]"
+              controls
+              autoPlay
+              loop
+              playsInline
+              onError={(e) => {
+                if (import.meta.env.DEV) {
+                  console.error('Video playback error:', e)
+                }
+              }}
+            />
+          ) : (
+            <ImageWithFallback
+              src={image.src}
+              alt={image.title}
+              className="w-full h-full object-contain max-h-[80vh]"
+              priority
+            />
+          )}
+          <div className="absolute inset-0 border border-amber-400/10 rounded-2xl pointer-events-none" />
+        </div>
     </motion.div>
 
     {/* Keyboard Hint - Desktop */}

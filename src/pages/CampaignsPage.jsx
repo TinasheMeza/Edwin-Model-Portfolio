@@ -4,7 +4,7 @@ import Campaigns from '../components/Campaigns'
 const CampaignsPage = () => {
   return (
     <motion.div
-      className="min-h-screen bg-charcoal pt-24"
+      className="min-h-screen bg-charcoal pt-12"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}

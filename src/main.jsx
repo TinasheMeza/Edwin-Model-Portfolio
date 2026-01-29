@@ -21,7 +21,10 @@ try {
     </React.StrictMode>
   )
 } catch (error) {
-  console.error('Failed to render app:', error)
+  // Only log in development - production builds drop console statements
+  if (import.meta.env.DEV) {
+    console.error('Failed to render app:', error)
+  }
   rootElement.innerHTML = `
     <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0d0906; color: #f5ebe0; padding: 2rem; text-align: center;">
       <div>

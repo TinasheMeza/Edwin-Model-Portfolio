@@ -66,7 +66,10 @@ const Contact = memo(() => {
         })
       }, 5000)
     } catch (error) {
-      console.error('Error submitting form:', error)
+      // Only log in development - production builds drop console statements
+      if (import.meta.env.DEV) {
+        console.error('Error submitting form:', error)
+      }
     } finally {
       setIsSubmitting(false)
     }

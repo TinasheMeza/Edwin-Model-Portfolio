@@ -62,8 +62,17 @@ export default defineConfig({
     // Target modern browsers for smaller bundle
     target: 'es2020',
   },
-  // Optimize image handling
-  assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.JPG', '**/*.png', '**/*.gif', '**/*.svg', '**/*.webp', '**/*.avif'],
+  // Optimize image and video handling
+  assetsInclude: [
+    '**/*.jpg', '**/*.jpeg', '**/*.JPG', 
+    '**/*.png', '**/*.PNG', 
+    '**/*.gif', '**/*.svg', 
+    '**/*.webp', '**/*.avif',
+    '**/*.heic', '**/*.HEIC',
+    '**/*.mp4', '**/*.MP4',
+    '**/*.mov', '**/*.MOV',
+    '**/*.webm', '**/*.WEBM'
+  ],
   // Optimize dependencies
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],

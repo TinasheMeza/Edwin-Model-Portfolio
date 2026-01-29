@@ -143,9 +143,9 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
           </>
         )}
 
-        {/* Image Container */}
-        <motion.div
-          className={`relative z-10 max-w-6xl max-h-[85vh] w-full mx-4 ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
+        {/* Image Container with Info Panel */}
+        <div className="relative z-10 max-w-6xl max-h-[85vh] w-full mx-4 flex flex-col items-center">
+          className={`${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -178,36 +178,6 @@ const ImageModal = ({ image, onClose, allImages = [], onNavigate }) => {
             <div className="absolute inset-0 border border-amber-400/10 rounded-2xl pointer-events-none" />
           </motion.div>
         </motion.div>
-
-        {/* Image Info Panel */}
-        {currentImage?.title && (
-          <motion.div
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 glass-card px-6 py-4 flex items-center gap-6"
-            initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 40, opacity: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            {/* Category Badge */}
-            {currentImage.category && (
-              <span className="px-3 py-1 text-xs uppercase tracking-wider text-amber-300 bg-amber-500/20 rounded-full font-light">
-                {currentImage.category}
-              </span>
-            )}
-            
-            {/* Title */}
-            <h3 className="text-lg font-medium text-cream">
-              {currentImage.title}
-            </h3>
-
-            {/* Image Counter */}
-            {allImages.length > 1 && (
-              <span className="text-sm text-warm-grey font-light">
-                {currentIndex + 1} / {allImages.length}
-              </span>
-            )}
-          </motion.div>
-        )}
 
         {/* Thumbnail Strip (for galleries with multiple images) */}
         {allImages.length > 4 && (
